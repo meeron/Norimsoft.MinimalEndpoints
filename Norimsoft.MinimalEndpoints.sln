@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{4D33768F
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{665A1F74-7B04-46D0-9881-CE6F92ADAEBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWebApp", "sample\SampleWebApp\SampleWebApp.csproj", "{68AF0C6F-AE82-4C6C-BE66-86222CF9DF60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,8 +30,13 @@ Global
 		{C91D16E1-6015-4221-B118-908062E15984}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C91D16E1-6015-4221-B118-908062E15984}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C91D16E1-6015-4221-B118-908062E15984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68AF0C6F-AE82-4C6C-BE66-86222CF9DF60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68AF0C6F-AE82-4C6C-BE66-86222CF9DF60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68AF0C6F-AE82-4C6C-BE66-86222CF9DF60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68AF0C6F-AE82-4C6C-BE66-86222CF9DF60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C91D16E1-6015-4221-B118-908062E15984} = {D961FF1B-2835-4E16-827D-4E44A3A479FD}
+		{68AF0C6F-AE82-4C6C-BE66-86222CF9DF60} = {665A1F74-7B04-46D0-9881-CE6F92ADAEBE}
 	EndGlobalSection
 EndGlobal
