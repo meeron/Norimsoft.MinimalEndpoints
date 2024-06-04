@@ -6,7 +6,7 @@ namespace Norimsoft.MinimalEndpoints;
 
 public abstract class MinimalEndpointBase
 {
-    protected abstract void Configure(EndpointRoute route);
+    protected abstract RouteHandlerBuilder Configure(EndpointRoute route);
     protected IResult Ok<TValue>(TValue value) => Results.Ok(value);
     protected IResult Created(string? uri) => Results.Created(uri, null);
     protected IResult NoContent() => Results.NoContent();
@@ -14,9 +14,9 @@ public abstract class MinimalEndpointBase
     
     internal abstract Delegate CreateHandler();
     
-    internal void Configure(WebApplication app)
+    internal RouteHandlerBuilder Configure(WebApplication app)
     {
-        Configure(new EndpointRoute(app, CreateHandler()));
+        return Configure(new EndpointRoute(app, CreateHandler()));
     }
 }
 

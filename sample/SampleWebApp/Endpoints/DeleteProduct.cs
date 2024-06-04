@@ -13,9 +13,9 @@ public class DeleteProduct : MinimalEndpoint<DeleteProductReq>
         _products = products;
     }
 
-    protected override void Configure(EndpointRoute route)
+    protected override RouteHandlerBuilder Configure(EndpointRoute route)
     {
-        route.Delete("/products/{id}");
+        return route.Delete("/products/{id}");
     }
 
     protected override async Task<IResult> Handle(DeleteProductReq req, CancellationToken ct)

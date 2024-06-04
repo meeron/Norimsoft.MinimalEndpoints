@@ -13,18 +13,17 @@ public class GetProducts : MinimalEndpoint
         _products = products;
     }
 
-    protected override void Configure(EndpointRoute route)
+    protected override RouteHandlerBuilder Configure(EndpointRoute route)
     {
-        route.Get("/products")
+        return route.Get("/products")
             .Produces<Product[]>();
     }
 
     protected override async Task<IResult> Handle(CancellationToken ct)
     {
-        await Task.CompletedTask;
-
         var products = _products.GetAll();
-
+        
+        await Task.CompletedTask;
         return Ok(products);
     }
 }

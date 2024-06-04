@@ -14,15 +14,13 @@ public class AddProduct : MinimalEndpoint<AddProductReq>
         _products = products;
     }
 
-    protected override void Configure(EndpointRoute route)
+    protected override RouteHandlerBuilder Configure(EndpointRoute route)
     {
-        route.Post("/products");
+        return route.Post("/products");
     }
 
     protected override async Task<IResult> Handle(AddProductReq req, CancellationToken ct)
     {
-        await Task.CompletedTask;
-
         var id = Guid.NewGuid();
         _products.Add(new Product
         {
@@ -31,6 +29,7 @@ public class AddProduct : MinimalEndpoint<AddProductReq>
             Price = req.Body.Price,
         });
         
+        await Task.CompletedTask;
         return Created($"/products/{id}");
     }
 }

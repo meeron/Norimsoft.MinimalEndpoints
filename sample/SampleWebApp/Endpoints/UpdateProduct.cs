@@ -13,17 +13,16 @@ public class UpdateProduct : MinimalEndpoint<UpdateProductReq>
         _products = products;
     }
 
-    protected override void Configure(EndpointRoute route)
+    protected override RouteHandlerBuilder Configure(EndpointRoute route)
     {
-        route.Put("/products/{id}");
+        return route.Put("/products/{id}");
     }
 
     protected override async Task<IResult> Handle(UpdateProductReq req, CancellationToken ct)
     {
-        await Task.CompletedTask;
-
         var updatedCount = _products.Update(req.Id, req.Body.Name, req.Body.Price);
 
+        await Task.CompletedTask;
         return updatedCount > 0
             ? Ok(_products.Get(req.Id))
             : BadRequest(new { message = "Failed to update" });

@@ -13,17 +13,16 @@ public class GetProduct : MinimalEndpoint<GetProductReq>
         _products = products;
     }
 
-    protected override void Configure(EndpointRoute route)
+    protected override RouteHandlerBuilder Configure(EndpointRoute route)
     {
-        route.Get("/products/{id}");
+        return route.Get("/products/{id}");
     }
 
     protected override async Task<IResult> Handle(GetProductReq req, CancellationToken ct)
     {
-        await Task.CompletedTask;
-
         var product = _products.Get(req.Id);
 
+        await Task.CompletedTask;
         return product != null ? Ok(product) : NoContent();
     }
 }
