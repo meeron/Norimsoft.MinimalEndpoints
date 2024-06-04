@@ -19,4 +19,10 @@ public class EndpointRoute
     
     public RouteHandlerBuilder Post([StringSyntax("Route")] string pattern) =>
         _app.MapPost(pattern, _handler);
+    
+    public RouteHandlerBuilder Put([StringSyntax("Route")] string pattern) =>
+        _app.MapPut(pattern, _handler);
+    
+    public RouteHandlerBuilder Delete([StringSyntax("Route")] string pattern) =>
+        _app.MapDelete(pattern, _handler);
 }

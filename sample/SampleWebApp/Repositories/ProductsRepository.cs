@@ -18,4 +18,33 @@ public class ProductsRepository
     {
         _data.Add(newProduct.Id, newProduct);
     }
+
+    public int Update(Guid id, string name, decimal price)
+    {
+        if (!_data.ContainsKey(id))
+        {
+            return 0;
+        }
+
+        _data[id] = new Product
+        {
+            Id = id,
+            Name = name,
+            Price = price,
+        };
+
+        return 1;
+    }
+
+    public int Delete(Guid id)
+    {
+        if (!_data.ContainsKey(id))
+        {
+            return 0;
+        }
+
+        _data.Remove(id);
+
+        return 1;
+    }
 }

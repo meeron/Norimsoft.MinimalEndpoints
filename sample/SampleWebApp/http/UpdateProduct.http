@@ -1,0 +1,10 @@
+@SampleWebApp_HostAddress = http://localhost:5166
+
+PUT {{SampleWebApp_HostAddress}}/products/84f46487-0ee1-4e64-95e4-f4f7243512fb
+Content-Type: application/json
+
+{
+  "name": "Orange 3",
+  "price": 11.99
+}
+###

@@ -4,5 +4,3 @@ GET {{SampleWebApp_HostAddress}}/products/84f46487-0ee1-4e64-95e4-f4f7243512fb
 Accept: application/json
 
 ###
-GET {{SampleWebApp_HostAddress}}/products/13138D27-6B34-4DC1-A5FC-5FA5CFF18ACC
-Accept: application/json
