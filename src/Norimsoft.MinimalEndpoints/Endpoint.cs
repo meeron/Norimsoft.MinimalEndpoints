@@ -8,6 +8,8 @@ public abstract class MinimalEndpointBase
 {
     protected abstract void Configure(EndpointRoute route);
     protected IResult Ok<TValue>(TValue value) => Results.Ok(value);
+    protected IResult Created(string? uri) => Results.Created(uri, null);
+    protected IResult NoContent() => Results.NoContent();
     
     internal abstract Delegate CreateHandler();
     
@@ -33,7 +35,7 @@ public abstract class MinimalEndpoint : MinimalEndpointBase
 }
 
 public abstract class MinimalEndpoint<TRequest> : MinimalEndpointBase
-    where TRequest : struct
+    where TRequest : class
 {
     protected abstract Task<IResult> Handle(TRequest req, CancellationToken ct);
 

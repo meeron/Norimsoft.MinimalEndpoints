@@ -1,0 +1,10 @@
+@SampleWebApp_HostAddress = http://localhost:5166
+
+POST {{SampleWebApp_HostAddress}}/products/
+Content-Type: application/json
+
+{
+  "name": "test product",
+  "price": 4.99
+}
+###

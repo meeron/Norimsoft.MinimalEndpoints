@@ -16,4 +16,7 @@ public class EndpointRoute
 
     public RouteHandlerBuilder Get([StringSyntax("Route")] string pattern) =>
         _app.MapGet(pattern, _handler);
+    
+    public RouteHandlerBuilder Post([StringSyntax("Route")] string pattern) =>
+        _app.MapPost(pattern, _handler);
 }

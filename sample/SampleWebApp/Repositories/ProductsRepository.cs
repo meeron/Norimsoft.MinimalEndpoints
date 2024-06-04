@@ -11,4 +11,11 @@ public class ProductsRepository
     };
 
     public IEnumerable<Product> GetAll() => _data.Values;
+
+    public Product? Get(Guid id) => _data.GetValueOrDefault(id);
+
+    public void Add(Product newProduct)
+    {
+        _data.Add(newProduct.Id, newProduct);
+    }
 }
