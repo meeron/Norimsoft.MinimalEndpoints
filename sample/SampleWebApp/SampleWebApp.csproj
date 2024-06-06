@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Norimsoft.MinimalEndpoints\Norimsoft.MinimalEndpoints.csproj" />
+      <ProjectReference Include="..\SampleWebApp.Books\SampleWebApp.Books.csproj" />
     </ItemGroup>
 
 </Project>
