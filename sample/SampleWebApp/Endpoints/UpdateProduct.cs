@@ -24,8 +24,8 @@ public class UpdateProduct : MinimalEndpoint<UpdateProductReq>
 
         await Task.CompletedTask;
         return updatedCount > 0
-            ? Ok(_products.Get(req.Id))
-            : BadRequest(new { message = "Failed to update" });
+            ? Results.Ok(_products.Get(req.Id))
+            : Results.BadRequest(new { message = "Failed to update" });
     }
 }
 

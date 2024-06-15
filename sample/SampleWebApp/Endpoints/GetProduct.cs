@@ -23,7 +23,7 @@ public class GetProduct : MinimalEndpoint<GetProductReq>
         var product = _products.Get(req.Id);
 
         await Task.CompletedTask;
-        return product != null ? Ok(product) : NoContent();
+        return product != null ? Results.Ok(product) : Results.NoContent();
     }
 }
 

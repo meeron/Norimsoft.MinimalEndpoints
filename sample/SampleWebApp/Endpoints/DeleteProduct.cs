@@ -23,7 +23,7 @@ public class DeleteProduct : MinimalEndpoint<DeleteProductReq>
         var deletedCount = _products.Delete(req.Id);
         
         await Task.CompletedTask;
-        return Ok(new { deletedCount });
+        return Results.Ok(new { deletedCount });
     }
 }
 

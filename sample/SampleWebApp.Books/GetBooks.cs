@@ -19,7 +19,7 @@ public class GetBooks : MinimalEndpoint
             new Book("Dune", "Frank Herbert"),
         };
 
-        return Task.FromResult(Ok(books));
+        return Task.FromResult(Results.Ok(books));
     }
 }
 

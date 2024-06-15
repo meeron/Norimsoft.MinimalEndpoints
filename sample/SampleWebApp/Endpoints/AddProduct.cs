@@ -32,7 +32,7 @@ public class AddProduct : MinimalEndpoint<AddProductReq>
         _products.Add(newProduct);
         
         await Task.CompletedTask;
-        return Created($"/products/{id}", newProduct);
+        return Results.Created($"/products/{id}", newProduct);
     }
 }
 

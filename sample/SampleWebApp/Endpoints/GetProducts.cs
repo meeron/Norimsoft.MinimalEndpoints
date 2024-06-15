@@ -24,6 +24,6 @@ public class GetProducts : MinimalEndpoint
         var products = _products.GetAll();
         
         await Task.CompletedTask;
-        return Ok(products);
+        return Results.Ok(products);
     }
 }
