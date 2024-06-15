@@ -1,5 +1,6 @@
 using System.Net;
 using FluentAssertions;
+using SampleWebApp.Models;
 
 namespace SampleWebApp.Tests.Tests;
 
@@ -28,19 +29,25 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
         res.StatusCode.Should().Be(HttpStatusCode.OK);
     }
     
-    [Theory]
-    [InlineData("/products")]
-    public async Task Post_ShouldResponse_Created(string url)
+    [Fact]
+    public async Task Post_ShouldResponse_Created()
     {
         // Arrange
+        const string name = "test1";
+        const decimal price = 9.99M;
+        
         var client = _factory.CreateClient();
-        var content = JsonContent.Create(new { });
+        var content = JsonContent.Create(new { name, price });
         
         // Act
-        var res = await client.PostAsync(url, content);
+        var res = await client.PostAsync("/products", content);
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var product = await res.Content.ReadFromJsonAsync<Product>();
+        product!.Name.Should().Be(name);
+        product!.Price.Should().Be(price);
     }
     
     [Theory]

@@ -22,15 +22,17 @@ public class AddProduct : MinimalEndpoint<AddProductReq>
     protected override async Task<IResult> Handle(AddProductReq req, CancellationToken ct)
     {
         var id = Guid.NewGuid();
-        _products.Add(new Product
+
+        var newProduct = new Product
         {
             Id = id,
             Name = req.Body.Name,
             Price = req.Body.Price,
-        });
+        };
+        _products.Add(newProduct);
         
         await Task.CompletedTask;
-        return Created($"/products/{id}");
+        return Created($"/products/{id}", newProduct);
     }
 }
 

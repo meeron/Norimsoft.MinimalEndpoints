@@ -8,7 +8,7 @@ public abstract class MinimalEndpointBase
 {
     protected abstract RouteHandlerBuilder Configure(EndpointRoute route);
     protected IResult Ok<TValue>(TValue value) => Results.Ok(value);
-    protected IResult Created(string? uri) => Results.Created(uri, null);
+    protected IResult Created(string? uri, object? value = null) => Results.Created(uri, value);
     protected IResult NoContent() => Results.NoContent();
     protected IResult BadRequest(object? error) => Results.BadRequest(error);
     
