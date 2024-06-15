@@ -23,5 +23,4 @@ app.UseSwaggerUI();
 
 app.UseMinimalEndpoints();
 app.Run();
-
-
+public partial class Program { }

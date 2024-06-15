@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWebApp", "sample\Samp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWebApp.Books", "sample\SampleWebApp.Books\SampleWebApp.Books.csproj", "{818F688B-BB90-48C9-AF3B-8B2F68956690}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWebApp.Tests", "sample\SampleWebApp.Tests\SampleWebApp.Tests.csproj", "{D537AB9C-8FF5-4381-8A1B-D994F3AF3E6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,10 +42,15 @@ Global
 		{818F688B-BB90-48C9-AF3B-8B2F68956690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{818F688B-BB90-48C9-AF3B-8B2F68956690}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{818F688B-BB90-48C9-AF3B-8B2F68956690}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D537AB9C-8FF5-4381-8A1B-D994F3AF3E6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D537AB9C-8FF5-4381-8A1B-D994F3AF3E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D537AB9C-8FF5-4381-8A1B-D994F3AF3E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D537AB9C-8FF5-4381-8A1B-D994F3AF3E6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C91D16E1-6015-4221-B118-908062E15984} = {D961FF1B-2835-4E16-827D-4E44A3A479FD}
 		{68AF0C6F-AE82-4C6C-BE66-86222CF9DF60} = {665A1F74-7B04-46D0-9881-CE6F92ADAEBE}
 		{818F688B-BB90-48C9-AF3B-8B2F68956690} = {665A1F74-7B04-46D0-9881-CE6F92ADAEBE}
+		{D537AB9C-8FF5-4381-8A1B-D994F3AF3E6D} = {665A1F74-7B04-46D0-9881-CE6F92ADAEBE}
 	EndGlobalSection
 EndGlobal

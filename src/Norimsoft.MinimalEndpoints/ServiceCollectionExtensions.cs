@@ -6,8 +6,11 @@ namespace Norimsoft.MinimalEndpoints;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMinimalEndpoints(this IServiceCollection services) =>
-        services.AddMinimalEndpoints(c => c.FromAssembly(Assembly.GetEntryAssembly()!));
+    public static IServiceCollection AddMinimalEndpoints(this IServiceCollection services)
+    {
+        var asm = Assembly.GetCallingAssembly();
+        return services.AddMinimalEndpoints(c => c.FromAssembly(asm));
+    }
     
     public static IServiceCollection AddMinimalEndpoints(
         this IServiceCollection services,

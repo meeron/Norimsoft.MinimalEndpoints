@@ -13,6 +13,7 @@ public class ConfigureServices
 
     public ConfigureServices FromAssemblyContaining<T>() =>
         FromAssembly(typeof(T).Assembly);
+    
     public ConfigureServices FromAssembly(Assembly assembly)
     {
         // TODO: Filter types
