@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Norimsoft.MinimalEndpoints.Internal;
 
-// ReSharper disable CheckNamespace
 namespace Norimsoft.MinimalEndpoints;
 
 public static class ServiceCollectionExtensions
@@ -31,9 +31,7 @@ public static class ServiceCollectionExtensions
         {
             // Used in requests handlers
             services.AddScoped(type);
-            
-            // Used by UseMinimalEndpoints extension
-            services.AddTransient(typeof(MinimalEndpointBase), type);
+            TypesCache.Types.Add(type);
         }
         
         return services;
