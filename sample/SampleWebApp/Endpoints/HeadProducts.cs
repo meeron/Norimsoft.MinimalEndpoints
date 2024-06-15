@@ -11,7 +11,7 @@ public class HeadProducts : MinimalEndpoint
 
     protected override Task<IResult> Handle(CancellationToken ct)
     {
-        Context.Response.Headers.Add("X-Test", "Test");
+        Context.Response.Headers.Append("X-Test", "Test");
         return Task.FromResult(Results.NoContent());
     }
 }
