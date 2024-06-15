@@ -25,4 +25,10 @@ public class EndpointRoute
     
     public RouteHandlerBuilder Delete([StringSyntax("Route")] string pattern) =>
         _app.MapDelete(pattern, _handler);
+    
+    public RouteHandlerBuilder Patch([StringSyntax("Route")] string pattern) =>
+        _app.MapPatch(pattern, _handler);
+    
+    public RouteHandlerBuilder Method([StringSyntax("Route")] string pattern, HttpMethod method) =>
+        _app.MapMethods(pattern, [method.Method], _handler);
 }

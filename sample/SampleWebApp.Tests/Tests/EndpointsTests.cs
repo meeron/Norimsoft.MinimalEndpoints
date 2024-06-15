@@ -50,32 +50,66 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
         product!.Price.Should().Be(price);
     }
     
-    [Theory]
-    [InlineData("/products/84F46487-0EE1-4E64-95E4-F4F7243512FB")]
-    public async Task Put_ShouldResponse_Ok(string url)
+
+    [Fact]
+    public async Task Put_ShouldResponse_Ok()
     {
         // Arrange
         var client = _factory.CreateClient();
         var content = JsonContent.Create(new { });
         
         // Act
-        var res = await client.PutAsync(url, content);
+        var res = await client.PutAsync("/products/84F46487-0EE1-4E64-95E4-F4F7243512FB", content);
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.OK);
     }
     
-    [Theory]
-    [InlineData("/products/110D4653-83C5-40AE-BB54-DD1A661FF334")]
-    public async Task Delete_ShouldResponse_Ok(string url)
+
+    [Fact]
+    public async Task Delete_ShouldResponse_Ok()
     {
         // Arrange
         var client = _factory.CreateClient();
         
         // Act
-        var res = await client.DeleteAsync(url);
+        var res = await client.DeleteAsync("/products/110D4653-83C5-40AE-BB54-DD1A661FF334");
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+    
+    [Fact]
+    public async Task Patch_ShouldResponse_Ok()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var content = JsonContent.Create(new { });
+        
+        // Act
+        var res = await client.PatchAsync("/products/patch", content);
+        
+        // Assert
+        res.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+    
+    [Fact]
+    public async Task Head_ShouldResponse_Ok()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new HttpRequestMessage
+        {
+            RequestUri = new Uri("/products/head"),
+            Method = HttpMethod.Head,
+        };
+        
+        // Act
+        var res = await client.SendAsync(request);
+        var headerValue = res.Headers.GetValues("X-Test").First();
+        
+        // Assert
+        res.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        headerValue.Should().Be("Test");
     }
 }

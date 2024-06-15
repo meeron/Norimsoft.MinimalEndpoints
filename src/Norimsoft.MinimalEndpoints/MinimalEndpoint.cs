@@ -6,6 +6,8 @@ namespace Norimsoft.MinimalEndpoints;
 
 public abstract class MinimalEndpointBase
 {
+    protected HttpContext Context { get; private set; }
+    
     protected abstract RouteHandlerBuilder Configure(EndpointRoute route);
     
     internal abstract Delegate CreateHandler();
@@ -14,6 +16,8 @@ public abstract class MinimalEndpointBase
     {
         return Configure(new EndpointRoute(app, CreateHandler()));
     }
+
+    internal void SetContext(HttpContext ctx) => Context = ctx;
 }
 
 public abstract class MinimalEndpoint : MinimalEndpointBase
@@ -23,10 +27,12 @@ public abstract class MinimalEndpoint : MinimalEndpointBase
     internal override Delegate CreateHandler()
     {
         var handlerType = GetType();
-        return async (IServiceProvider sp, CancellationToken ct) =>
+        return async (IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
         {
-            var endpoint = sp.GetRequiredService(handlerType) as MinimalEndpoint;
-            return await endpoint!.Handle(ct);
+            var endpoint = (MinimalEndpoint)sp.GetRequiredService(handlerType);
+            endpoint.SetContext(ctx);
+            
+            return await endpoint.Handle(ct);
         };
     }
 }
@@ -39,10 +45,12 @@ public abstract class MinimalEndpoint<TRequest> : MinimalEndpointBase
     internal override Delegate CreateHandler()
     {
         var handlerType = GetType();
-        return async ([AsParameters] TRequest req, IServiceProvider sp, CancellationToken ct) =>
+        return async ([AsParameters] TRequest req, IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
         {
-            var endpoint = sp.GetRequiredService(handlerType) as MinimalEndpoint<TRequest>;
-            return await endpoint!.Handle(req, ct);
+            var endpoint = (MinimalEndpoint<TRequest>)sp.GetRequiredService(handlerType);
+            endpoint.SetContext(ctx);
+            
+            return await endpoint.Handle(req, ct);
         };
     }
 }
