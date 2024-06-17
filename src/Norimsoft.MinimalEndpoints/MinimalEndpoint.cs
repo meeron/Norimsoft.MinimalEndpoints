@@ -1,6 +1,7 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -120,7 +121,7 @@ public abstract class MinimalEndpoint<TRequest> : MinimalEndpointBase
     internal override Delegate CreateHandler()
     {
         var handlerType = GetType();
-        return async ([AsParameters] TRequest req, IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
+        return async ([FromBody] TRequest req, IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
         {
             var endpoint = (MinimalEndpoint<TRequest>)sp.GetRequiredService(handlerType);
             endpoint.SetContext(ctx);

@@ -4,7 +4,7 @@ using SampleWebApp.Repositories;
 
 namespace SampleWebApp.Endpoints;
 
-public class GetProduct : MinimalEndpoint<GetProductReq>
+public class GetProduct : MinimalEndpoint
 {
     private readonly ProductsRepository _products;
 
@@ -18,17 +18,11 @@ public class GetProduct : MinimalEndpoint<GetProductReq>
         return route.Get("/products/{id}");
     }
 
-    protected override async Task<IResult> Handle(GetProductReq req, CancellationToken ct)
+    protected override async Task<IResult> Handle(CancellationToken ct)
     {
-        var product = _products.Get(req.Id);
+        var product = _products.Get(Param<Guid>("id"));
 
         await Task.CompletedTask;
         return product != null ? Results.Ok(product) : Results.NoContent();
     }
-}
-
-public class GetProductReq
-{
-    [FromRoute]
-    public Guid Id { get; init; }
 }
