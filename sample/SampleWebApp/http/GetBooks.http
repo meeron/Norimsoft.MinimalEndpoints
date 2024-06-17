@@ -4,3 +4,4 @@ GET {{SampleWebApp_HostAddress}}/books
 Accept: application/json
 
 ###
+GET {{SampleWebApp_HostAddress}}/books/123?text=test123&guid=83CAA479-9AA3-46FD-B029-F375018664D5&bool=true&double=6.65

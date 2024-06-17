@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using Norimsoft.MinimalEndpoints;
 using SampleWebApp.Repositories;
 
 namespace SampleWebApp.Endpoints;
 
-public class DeleteProduct : MinimalEndpoint<DeleteProductReq>
+public class DeleteProduct : MinimalEndpoint
 {
     private readonly ProductsRepository _products;
 
@@ -18,17 +17,11 @@ public class DeleteProduct : MinimalEndpoint<DeleteProductReq>
         return route.Delete("/products/{id}");
     }
 
-    protected override async Task<IResult> Handle(DeleteProductReq req, CancellationToken ct)
+    protected override async Task<IResult> Handle(CancellationToken ct)
     {
-        var deletedCount = _products.Delete(req.Id);
+        var deletedCount = _products.Delete(Param<Guid>("id"));
         
         await Task.CompletedTask;
         return Results.Ok(new { deletedCount });
     }
-}
-
-public class DeleteProductReq
-{
-    [FromRoute]
-    public Guid Id { get; init; }
 }
