@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Norimsoft.MinimalEndpoints;
 using SampleWebApp.Repositories;
 

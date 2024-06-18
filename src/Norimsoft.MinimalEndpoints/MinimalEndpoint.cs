@@ -12,6 +12,7 @@ public abstract class MinimalEndpointBase
     protected HttpContext Context { get; private set; }
     
     protected abstract RouteHandlerBuilder Configure(EndpointRoute route);
+    protected virtual IResult OnError(Exception ex) => throw new Exception(ex.Message, ex);
 
     protected T? Param<T>(string name, T? fallback = default)
         where T: IComparable
@@ -108,7 +109,14 @@ public abstract class MinimalEndpoint : MinimalEndpointBase
             var endpoint = (MinimalEndpoint)sp.GetRequiredService(handlerType);
             endpoint.SetContext(ctx);
             
-            return await endpoint.Handle(ct);
+            try
+            {
+                return await endpoint.Handle(ct);
+            }
+            catch (Exception ex)
+            {
+                return endpoint.OnError(ex);
+            }
         };
     }
 }
@@ -125,8 +133,15 @@ public abstract class MinimalEndpoint<TRequest> : MinimalEndpointBase
         {
             var endpoint = (MinimalEndpoint<TRequest>)sp.GetRequiredService(handlerType);
             endpoint.SetContext(ctx);
-            
-            return await endpoint.Handle(req, ct);
+
+            try
+            {
+                return await endpoint.Handle(req, ct);
+            }
+            catch (Exception ex)
+            {
+                return endpoint.OnError(ex);
+            }
         };
     }
 }
