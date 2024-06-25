@@ -112,4 +112,23 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
         res.StatusCode.Should().Be(HttpStatusCode.NoContent);
         headerValue.Should().Be("Test");
     }
+    
+    [Fact]
+    public async Task GetWithError_ShouldResponse_Problem()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        
+        // Act
+        var res = await client.GetAsync("/error");
+        var errorDetails = await res.Content.ReadFromJsonAsync<ErrorDetails>();
+        
+        // Assert
+        res.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        errorDetails!.Type.Should().Be("ProblemCode");
+        errorDetails.Title.Should().Be("This is error title");
+        errorDetails.Status.Should().Be(500);
+    }
 }
+
+public record ErrorDetails(string Type, string Title, int Status);
