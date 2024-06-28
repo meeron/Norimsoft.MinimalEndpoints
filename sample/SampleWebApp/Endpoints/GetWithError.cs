@@ -13,11 +13,4 @@ public class GetWithError : MinimalEndpoint
     {
         throw new Exception("Test error");
     }
-
-    protected override IResult OnError(Exception ex)
-    {
-        return Results.Problem(
-            type: "ProblemCode",
-            title: "This is error title");
-    }
 }

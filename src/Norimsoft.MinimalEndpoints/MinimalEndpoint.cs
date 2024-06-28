@@ -12,7 +12,6 @@ public abstract class MinimalEndpointBase
     protected HttpContext Context { get; private set; }
     
     protected abstract RouteHandlerBuilder Configure(EndpointRoute route);
-    protected virtual IResult OnError(Exception ex) => throw new Exception(ex.Message, ex);
 
     protected T? Param<T>(string name, T? fallback = default)
         where T: IComparable
@@ -32,7 +31,8 @@ public abstract class MinimalEndpointBase
     
     internal RouteHandlerBuilder Configure(WebApplication app)
     {
-        return Configure(new EndpointRoute(app, CreateHandler()));
+        return Configure(new EndpointRoute(app, CreateHandler()))
+            .AddErrorHandler(GetType().FullName!);
     }
 
     internal void SetContext(HttpContext ctx) => Context = ctx;
@@ -104,19 +104,12 @@ public abstract class MinimalEndpoint : MinimalEndpointBase
     internal override Delegate CreateHandler()
     {
         var handlerType = GetType();
-        return async (IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
+        return (IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
         {
             var endpoint = (MinimalEndpoint)sp.GetRequiredService(handlerType);
             endpoint.SetContext(ctx);
             
-            try
-            {
-                return await endpoint.Handle(ct);
-            }
-            catch (Exception ex)
-            {
-                return endpoint.OnError(ex);
-            }
+            return endpoint.Handle(ct);
         };
     }
 }
@@ -129,19 +122,12 @@ public abstract class MinimalEndpoint<TRequest> : MinimalEndpointBase
     internal override Delegate CreateHandler()
     {
         var handlerType = GetType();
-        return async ([FromBody] TRequest req, IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
+        return ([FromBody] TRequest req, IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
         {
             var endpoint = (MinimalEndpoint<TRequest>)sp.GetRequiredService(handlerType);
             endpoint.SetContext(ctx);
 
-            try
-            {
-                return await endpoint.Handle(req, ct);
-            }
-            catch (Exception ex)
-            {
-                return endpoint.OnError(ex);
-            }
+            return endpoint.Handle(req, ct);
         };
     }
 }

@@ -125,8 +125,8 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        errorDetails!.Type.Should().Be("ProblemCode");
-        errorDetails.Title.Should().Be("This is error title");
+        errorDetails!.Type.Should().Be("System.Exception");
+        errorDetails.Title.Should().Be("Test error");
         errorDetails.Status.Should().Be(500);
     }
 }
