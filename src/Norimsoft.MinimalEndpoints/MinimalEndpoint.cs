@@ -29,10 +29,10 @@ public abstract class MinimalEndpointBase
     
     internal abstract Delegate CreateHandler();
     
-    internal RouteHandlerBuilder Configure(WebApplication app)
+    internal RouteHandlerBuilder Configure(WebApplication app, MinimalEndpointsConfiguration config)
     {
         return Configure(new EndpointRoute(app, CreateHandler()))
-            .AddErrorHandler(GetType().FullName!);
+            .AddErrorHandler(GetType().FullName!, config.OnError);
     }
 
     internal void SetContext(HttpContext ctx) => Context = ctx;

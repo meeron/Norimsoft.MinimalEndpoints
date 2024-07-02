@@ -21,6 +21,10 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseMinimalEndpoints();
+app.UseMinimalEndpoints(config =>
+{
+    // Use custom error handler
+    //config.OnError = (ex, httpContext) => Results.BadRequest(new { ex.Message, Path = httpContext.Request.Path.Value });
+});
 app.Run();
 public partial class Program { }

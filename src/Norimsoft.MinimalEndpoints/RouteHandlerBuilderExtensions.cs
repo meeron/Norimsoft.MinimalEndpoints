@@ -7,7 +7,10 @@ namespace Norimsoft.MinimalEndpoints;
 
 public static class RouteHandlerBuilderExtensions
 {
-    internal static RouteHandlerBuilder AddErrorHandler(this RouteHandlerBuilder builder, string endpointType)
+    internal static RouteHandlerBuilder AddErrorHandler(
+        this RouteHandlerBuilder builder,
+        string endpointType,
+        Func<Exception, HttpContext, IResult>? onError)
     {
         return builder.AddEndpointFilter(async (context, next) =>
         {
@@ -20,6 +23,11 @@ public static class RouteHandlerBuilderExtensions
             }
             catch (Exception ex)
             {
+                if (onError is not null)
+                {
+                    return onError(ex, context.HttpContext);
+                }
+             
                 logger.LogError(ex, ex.Message);
                 return Results.Problem(
                     type: ex.GetType().FullName,
