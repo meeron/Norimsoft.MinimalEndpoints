@@ -126,6 +126,8 @@ public abstract class MinimalEndpoint<TRequest> : MinimalEndpointBase
         return async ([FromBody] TRequest req, IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
         {
             var endpoint = (MinimalEndpoint<TRequest>)sp.GetRequiredService(handlerType);
+            
+            // TODO: Support for pipelines/middlewares
             var validator = sp.GetService<IValidator<TRequest>>();
             if (validator != null)
             {

@@ -1,5 +1,5 @@
 # Norimsoft.MinimalEndpoints
-Small and developer friendly library to easy structure and configure minimal api endpoints.
+Small and developer friendly library to easily structure and configure minimal api endpoints.
 
 ## Getting started
 ### Installation
@@ -93,6 +93,40 @@ public class AddProduct : MinimalEndpoint<NewProduct>
 }
 
 public record NewProduct(string Name, decimal Price);
+```
+### FluentValidation integration
+Just add a validator as you usually do using [FluentValidation](https://docs.fluentvalidation.net/en/latest/start.html)
+```cs
+public class AddBook : MinimalEndpoint<NewBook>
+{
+    private readonly IBooksReppository _books;
+    
+    public AddBook(IBooksReppository books)
+    {
+        _books = books;
+    }
+    
+    protected override RouteHandlerBuilder Configure(EndpointRoute route)
+    {
+        return route.Post("/books");
+    }
+
+    protected override async Task<IResult> Handle(NewBook req, CancellationToken ct)
+    {
+        await _books.Add(new Book { Name = req.Name });
+        return Results.Ok();
+    }
+
+    public class Validator : AbstractValidator<NewBook>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
+}
+
+public record NewBook(string Name);
 ```
 
 #### Check sample project for more examples
