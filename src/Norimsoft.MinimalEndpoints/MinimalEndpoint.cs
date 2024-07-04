@@ -1,4 +1,5 @@
 using System.Globalization;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -122,12 +123,22 @@ public abstract class MinimalEndpoint<TRequest> : MinimalEndpointBase
     internal override Delegate CreateHandler()
     {
         var handlerType = GetType();
-        return ([FromBody] TRequest req, IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
+        return async ([FromBody] TRequest req, IServiceProvider sp, CancellationToken ct, HttpContext ctx) =>
         {
             var endpoint = (MinimalEndpoint<TRequest>)sp.GetRequiredService(handlerType);
+            var validator = sp.GetService<IValidator<TRequest>>();
+            if (validator != null)
+            {
+                var result = await validator.ValidateAsync(req, ct);
+                if (!result.IsValid)
+                {
+                    return Results.ValidationProblem(result.ToDictionary());
+                }
+            }
+            
             endpoint.SetContext(ctx);
 
-            return endpoint.Handle(req, ct);
+            return await endpoint.Handle(req, ct);
         };
     }
 }

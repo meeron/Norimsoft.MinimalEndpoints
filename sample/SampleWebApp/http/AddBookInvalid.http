@@ -1,0 +1,7 @@
+@SampleWebApp_HostAddress = http://localhost:5166
+
+POST {{SampleWebApp_HostAddress}}/books/invalid
+Accept: application/json
+Content-Type: application/json
+
+{}

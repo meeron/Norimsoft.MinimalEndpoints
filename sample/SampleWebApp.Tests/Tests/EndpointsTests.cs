@@ -49,7 +49,6 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
         product!.Name.Should().Be(name);
         product!.Price.Should().Be(price);
     }
-    
 
     [Fact]
     public async Task Put_ShouldResponse_Ok()
@@ -128,6 +127,24 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
         errorDetails!.Type.Should().Be("System.Exception");
         errorDetails.Title.Should().Be("Test error");
         errorDetails.Status.Should().Be(500);
+    }
+    
+    [Fact]
+    public async Task InvalidPost_ShouldResponse_BadRequest()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var content = JsonContent.Create(new { });
+        
+        // Act
+        var res = await client.PostAsync("/books/invalid", content);
+        var validationResult = await res.Content.ReadFromJsonAsync<ValidationResult>();
+        
+        // Assert
+        res.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        validationResult!.Title.Should().Be("One or more validation errors occurred.");
+        validationResult.Status.Should().Be(400);
+        validationResult.Errors!["Name"][0].Should().Be("'Name' must not be empty.");
     }
 }
 
