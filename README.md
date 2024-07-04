@@ -1,4 +1,6 @@
 # Norimsoft.MinimalEndpoints
+[![Build Norimsoft.MinimalEndpoints](https://github.com/meeron/Norimsoft.MinimalEndpoints/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/meeron/Norimsoft.MinimalEndpoints/actions/workflows/ci.yml)
+
 Small and developer friendly library to easily structure and configure minimal api endpoints.
 
 ## Getting started
