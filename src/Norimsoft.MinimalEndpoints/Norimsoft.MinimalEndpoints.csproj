@@ -1,13 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Authors>Miron Jakubowski</Authors>
+        <Description>Small and developer friendly library to easy structure and configure minimal api endpoints</Description>
+        <Copyright>Copyright Miron Jakubowski</Copyright>
+        <PackageTags>endpoints;minimalapi;webapi</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <MinVerTagPrefix>v</MinVerTagPrefix>
+        <PackageProjectUrl>https://github.com/meeron/Norimsoft.MinimalEndpoints</PackageProjectUrl>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageReadmeFile>Package_README.md</PackageReadmeFile>
     </PropertyGroup>
-
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
         <PackageReference Include="FluentValidation" Version="11.9.2" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="Package_README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>

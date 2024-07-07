@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{4D33768F
 		README.md = README.md
 		.gitignore = .gitignore
 		ci.yml = .github/workflows/ci.yml
+		Makefile = Makefile
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{665A1F74-7B04-46D0-9881-CE6F92ADAEBE}"
