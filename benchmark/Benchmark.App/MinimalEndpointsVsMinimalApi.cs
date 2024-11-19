@@ -2,6 +2,7 @@ namespace Benchmark.App;
 
 using BenchmarkDotNet.Attributes;
 
+[MemoryDiagnoser]
 public class MinimalEndpointsVsMinimalApi
 {
     private const int Count = 100;
