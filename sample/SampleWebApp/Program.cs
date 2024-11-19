@@ -1,11 +1,11 @@
 using Norimsoft.MinimalEndpoints;
 using SampleWebApp.Books;
 using SampleWebApp.Repositories;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<ProductsRepository>();
 
@@ -18,10 +18,10 @@ builder.Services.AddMinimalEndpoints(c => c.FromAssemblyContaining<Book>());
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.MapScalarApiReference(); // scalar/v1
+app.MapOpenApi();
 
-app.UseMinimalEndpoints(config =>
+app.UseMinimalEndpoints(_ =>
 {
     // Use custom error handler
     //config.OnError = (ex, httpContext) => Results.BadRequest(new { ex.Message, Path = httpContext.Request.Path.Value });

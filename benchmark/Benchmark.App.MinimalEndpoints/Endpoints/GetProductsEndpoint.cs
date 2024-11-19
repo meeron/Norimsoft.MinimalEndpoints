@@ -15,8 +15,7 @@ public class GetProductsEndpoint : MinimalEndpoint
     protected override RouteHandlerBuilder Configure(EndpointRoute route)
     {
         return route.Get("/products")
-            .Produces<Product[]>()
-            .WithOpenApi();
+            .Produces<Product[]>();
     }
 
     protected override Task<IResult> Handle(CancellationToken ct)
