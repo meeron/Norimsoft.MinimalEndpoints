@@ -23,6 +23,20 @@ public class GetProducts : MinimalEndpoint
     {
         var products = _products.GetAll();
         
+        var freeText = Param("q");
+        var price = Param<decimal?>("price");
+
+        if (!string.IsNullOrEmpty(freeText))
+        {
+            products = products.Where(p => p.Name.Contains(freeText, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        if (price != null)
+        {
+            products = products.Where(p => p.Price >= price);
+        }
+        
+        
         await Task.CompletedTask;
         return Results.Ok(products);
     }

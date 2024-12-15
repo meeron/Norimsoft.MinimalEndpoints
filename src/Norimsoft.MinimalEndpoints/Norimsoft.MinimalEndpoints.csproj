@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <Authors>Miron Jakubowski</Authors>
         <Description>Small and developer friendly library to easy structure and configure minimal api endpoints</Description>
         <Copyright>Copyright Miron Jakubowski</Copyright>

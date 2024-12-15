@@ -43,7 +43,7 @@ public class GetProduct : MinimalEndpoint
         var productId = Param<Guid>("id");
         
         // Get query string parameter
-        var version = Param<int>("version");
+        var version = Param<int?>("version");
         
         var product = await _products.Get(productId);
         

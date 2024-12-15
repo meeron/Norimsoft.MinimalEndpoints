@@ -4,10 +4,36 @@ namespace SampleWebApp.Repositories;
 
 public class ProductsRepository
 {
+    private object _lock = new object();
     private readonly Dictionary<Guid, Product> _data = new Dictionary<Guid, Product>
     {
-        { Guid.Parse("84F46487-0EE1-4E64-95E4-F4F7243512FB"), new Product { Id = Guid.Parse("84F46487-0EE1-4E64-95E4-F4F7243512FB"), Name = "Orange", Price = 9.99M } },
-        { Guid.Parse("110D4653-83C5-40AE-BB54-DD1A661FF334"), new Product { Id = Guid.Parse("110D4653-83C5-40AE-BB54-DD1A661FF334"), Name = "Apple", Price = 6.59M } },
+        {
+            Guid.Parse("84F46487-0EE1-4E64-95E4-F4F7243512FB"),
+            new Product
+            {
+                Id = Guid.Parse("84F46487-0EE1-4E64-95E4-F4F7243512FB"),
+                Name = "Orange",
+                Price = 9.99M,
+            }
+        },
+        {
+            Guid.Parse("110D4653-83C5-40AE-BB54-DD1A661FF334"),
+            new Product
+            {
+                Id = Guid.Parse("110D4653-83C5-40AE-BB54-DD1A661FF334"),
+                Name = "Apple",
+                Price = 6.59M,
+            }
+        },
+        {
+            Guid.Parse("D8D8AEA6-3984-492E-9062-EA03B19B0B4F"),
+            new Product
+            {
+                Id = Guid.Parse("D8D8AEA6-3984-492E-9062-EA03B19B0B4F"),
+                Name = "",
+                Price = 0M,
+            }
+        },
     };
 
     public IEnumerable<Product> GetAll() => _data.Values;
@@ -38,13 +64,16 @@ public class ProductsRepository
 
     public int Delete(Guid id)
     {
-        if (!_data.ContainsKey(id))
+        lock (_lock)
         {
-            return 0;
+            if (!_data.ContainsKey(id))
+            {
+                return 0;
+            }
+
+            _data.Remove(id);
+
+            return 1;   
         }
-
-        _data.Remove(id);
-
-        return 1;
     }
 }

@@ -4,13 +4,14 @@ using SampleWebApp.Models;
 
 namespace SampleWebApp.Tests.Tests;
 
-public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
+[Collection(TestCollection.Name)]
+public class EndpointsTests
 {
-    private readonly SampleWebAppTestFactory _factory;
+    private readonly HttpClient _client;
 
     public EndpointsTests(SampleWebAppTestFactory factory)
     {
-        _factory = factory;
+        _client = factory.CreateClient();
     }
 
     [Theory]
@@ -19,14 +20,37 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
     [InlineData("/books")]
     public async Task Get_ShouldResponse_Ok(string url)
     {
-        // Arrange
-        var client = _factory.CreateClient();
-        
         // Act
-        var res = await client.GetAsync(url);
+        var res = await _client.GetAsync(url);
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+    
+    [Fact]
+    public async Task GetWithQueryString_ShouldResponse_Ok()
+    {
+        // Act
+        var res = await _client.GetAsync("/products?q=apple");
+        
+        // Assert
+        res.StatusCode.Should().Be(HttpStatusCode.OK);
+        var dtops = await res.Content.ReadFromJsonAsync<IEnumerable<Product>>();
+        
+        dtops.Count().Should().Be(1);
+    }
+    
+    [Fact]
+    public async Task GetWithQueryDecimal_ShouldResponse_Ok()
+    {
+        // Act
+        var res = await _client.GetAsync("/products?price=9.5");
+        
+        // Assert
+        res.StatusCode.Should().Be(HttpStatusCode.OK);
+        var dtops = await res.Content.ReadFromJsonAsync<IEnumerable<Product>>();
+        
+        dtops.Count().Should().Be(1);
     }
     
     [Fact]
@@ -34,13 +58,12 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
     {
         // Arrange
         const string name = "test1";
-        const decimal price = 9.99M;
+        const decimal price = 8.99M;
         
-        var client = _factory.CreateClient();
         var content = JsonContent.Create(new { name, price });
         
         // Act
-        var res = await client.PostAsync("/products", content);
+        var res = await _client.PostAsync("/products", content);
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -54,11 +77,13 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
     public async Task Put_ShouldResponse_Ok()
     {
         // Arrange
-        var client = _factory.CreateClient();
-        var content = JsonContent.Create(new { });
+        var content = JsonContent.Create(new
+        {
+            Name = "new name",
+        });
         
         // Act
-        var res = await client.PutAsync("/products/84F46487-0EE1-4E64-95E4-F4F7243512FB", content);
+        var res = await _client.PutAsync("/products/D8D8AEA6-3984-492E-9062-EA03B19B0B4F", content);
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -68,11 +93,8 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
     [Fact]
     public async Task Delete_ShouldResponse_Ok()
     {
-        // Arrange
-        var client = _factory.CreateClient();
-        
         // Act
-        var res = await client.DeleteAsync("/products/110D4653-83C5-40AE-BB54-DD1A661FF334");
+        var res = await _client.DeleteAsync("/products/110D4653-83C5-40AE-BB54-DD1A661FF334");
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -82,11 +104,10 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
     public async Task Patch_ShouldResponse_Ok()
     {
         // Arrange
-        var client = _factory.CreateClient();
         var content = JsonContent.Create(new { });
         
         // Act
-        var res = await client.PatchAsync("/products/patch", content);
+        var res = await _client.PatchAsync("/products/patch", content);
         
         // Assert
         res.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -96,7 +117,6 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
     public async Task Head_ShouldResponse_Ok()
     {
         // Arrange
-        var client = _factory.CreateClient();
         var request = new HttpRequestMessage
         {
             RequestUri = new Uri("/products/head"),
@@ -104,7 +124,7 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
         };
         
         // Act
-        var res = await client.SendAsync(request);
+        var res = await _client.SendAsync(request);
         var headerValue = res.Headers.GetValues("X-Test").First();
         
         // Assert
@@ -115,11 +135,8 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
     [Fact]
     public async Task GetWithError_ShouldResponse_Problem()
     {
-        // Arrange
-        var client = _factory.CreateClient();
-        
         // Act
-        var res = await client.GetAsync("/error");
+        var res = await _client.GetAsync("/error");
         var errorDetails = await res.Content.ReadFromJsonAsync<ErrorDetails>();
         
         // Assert
@@ -133,11 +150,10 @@ public class EndpointsTests : IClassFixture<SampleWebAppTestFactory>
     public async Task InvalidPost_ShouldResponse_BadRequest()
     {
         // Arrange
-        var client = _factory.CreateClient();
         var content = JsonContent.Create(new { });
         
         // Act
-        var res = await client.PostAsync("/books/invalid", content);
+        var res = await _client.PostAsync("/books/invalid", content);
         var validationResult = await res.Content.ReadFromJsonAsync<ValidationResult>();
         
         // Assert

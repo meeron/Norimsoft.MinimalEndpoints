@@ -14,18 +14,69 @@ public abstract class MinimalEndpointBase
     
     protected abstract RouteHandlerBuilder Configure(EndpointRoute route);
 
-    protected T? Param<T>(string name, T? fallback = default)
-        where T: IComparable
+    protected string? Param(string name)
     {
         var value = Context.GetRouteValue(name);
+        if (value != null)
+        {
+            return value.ToString();
+        }
+        
+        return Context.Request.Query.TryGetValue(name, out var values) ? values.First() : null;
+    }
+    
+    protected T? Param<T>(string name)
+    {
+        var value = Param(name);
         if (value == null)
         {
-            return Query(name, fallback);
+            return default;
+        }
+        
+        var outType = typeof(T);
+
+        if (outType == typeof(string))
+        {
+            return (T)Convert.ChangeType(value, typeof(string));
         }
 
-        return TryBindValue<T>(value.ToString(), out var outValue)
-            ? outValue
-            : fallback;
+        if ((outType == typeof(int) || outType == typeof(int?))
+            && int.TryParse(value, out var intValue))
+        {
+            return (T)Convert.ChangeType(intValue, typeof(int));
+        }
+        
+        if ((outType == typeof(Guid) || outType == typeof(Guid?))
+            && Guid.TryParse(value, out var guidValue))
+        {
+            return (T)Convert.ChangeType(guidValue, typeof(Guid));
+        }
+        
+        if ((outType == typeof(bool) || outType == typeof(bool?))
+            && bool.TryParse(value, out var boolValue))
+        {
+            return (T)Convert.ChangeType(boolValue, typeof(bool));
+        }
+        
+        if ((outType == typeof(long) || outType == typeof(long?))
+            && long.TryParse(value, out var longValue))
+        {
+            return (T)Convert.ChangeType(longValue, typeof(long));
+        }
+        
+        if ((outType == typeof(double) || outType == typeof(double?))
+            && double.TryParse(value, CultureInfo.InvariantCulture, out var doubleValue))
+        {
+            return (T)Convert.ChangeType(doubleValue, typeof(double));
+        }
+        
+        if ((outType == typeof(decimal) || outType == typeof(decimal?))
+            && decimal.TryParse(value, CultureInfo.InvariantCulture, out var decimalValue))
+        {
+            return (T)Convert.ChangeType(decimalValue, typeof(decimal));
+        }
+
+        return default;
     }
     
     internal abstract Delegate CreateHandler();
@@ -37,65 +88,6 @@ public abstract class MinimalEndpointBase
     }
 
     internal void SetContext(HttpContext ctx) => Context = ctx;
-
-    private T? Query<T>(string name, T? fallback = default)
-        where T: IComparable
-    {
-        if (Context.Request.Query.TryGetValue(name, out var values))
-        {
-            // TODO: Bind collection
-            return TryBindValue<T>(values.First(), out var val)
-                ? val
-                : fallback;
-        }
-        
-        return fallback;
-    }
-
-    private static bool TryBindValue<T>(string? value, out T? outValue)
-        where T: IComparable
-    {
-        var outType = typeof(T);
-
-        if (outType == typeof(string))
-        {
-            outValue = (T)Convert.ChangeType(value!, typeof(string));
-            return true;
-        }
-
-        if (outType == typeof(int) && int.TryParse(value, out var intValue))
-        {
-            outValue = (T)Convert.ChangeType(intValue, typeof(int));
-            return true;
-        }
-        
-        if (outType == typeof(Guid) && Guid.TryParse(value, out var guidValue))
-        {
-            outValue = (T)Convert.ChangeType(guidValue, typeof(Guid));
-            return true;
-        }
-        
-        if (outType == typeof(bool) && bool.TryParse(value, out var boolValue))
-        {
-            outValue = (T)Convert.ChangeType(boolValue, typeof(bool));
-            return true;
-        }
-        
-        if (outType == typeof(long) && long.TryParse(value, out var longValue))
-        {
-            outValue = (T)Convert.ChangeType(longValue, typeof(long));
-            return true;
-        }
-        
-        if (outType == typeof(double) && double.TryParse(value, CultureInfo.InvariantCulture, out var doubleValue))
-        {
-            outValue = (T)Convert.ChangeType(doubleValue, typeof(double));
-            return true;
-        }
-        
-        outValue = default;
-        return false;
-    }
 }
 
 public abstract class MinimalEndpoint : MinimalEndpointBase
