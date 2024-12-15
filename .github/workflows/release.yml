@@ -22,7 +22,7 @@ jobs:
         with:
           dotnet-version: '9.0.x'
       - name: Build packages
-        run: make pack c=Release
+        run: make pack c=Release v=${{ github.event.inputs.version }}
       - name: Push packages
         env:
           API_KEY: ${{ secrets.NUGET_API_KEY }}
