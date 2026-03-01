@@ -10,7 +10,7 @@ namespace Norimsoft.MinimalEndpoints;
 
 public abstract class MinimalEndpointBase
 {
-    protected HttpContext Context { get; private set; }
+    protected HttpContext Context { get; private set; } = null!;
     
     protected abstract RouteHandlerBuilder Configure(EndpointRoute route);
 
