@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/benchmark/">
+    <Project Path="benchmark/Benchmark.App.MinimalApi/Benchmark.App.MinimalApi.csproj" />
+    <Project Path="benchmark/Benchmark.App.MinimalEndpoints/Benchmark.App.MinimalEndpoints.csproj" />
+    <Project Path="benchmark/Benchmark.App/Benchmark.App.csproj" />
+    <Project Path="benchmark/Benchmark.Common/Benchmark.Common.csproj" />
+  </Folder>
+  <Folder Name="/items/">
+    <File Path=".gitignore" />
+    <File Path="ci.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="Makefile" />
+    <File Path="README.md" />
+    <File Path="release.yml" />
+  </Folder>
+  <Folder Name="/sample/">
+    <Project Path="sample/SampleWebApp.Books/SampleWebApp.Books.csproj" />
+    <Project Path="sample/SampleWebApp.Tests/SampleWebApp.Tests.csproj" />
+    <Project Path="sample/SampleWebApp/SampleWebApp.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Norimsoft.MinimalEndpoints/Norimsoft.MinimalEndpoints.csproj" />
+  </Folder>
+</Solution>
