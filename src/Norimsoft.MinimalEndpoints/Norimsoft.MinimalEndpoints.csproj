@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
         <Authors>Miron Jakubowski</Authors>
         <Description>Small and developer friendly library to easy structure and configure minimal api endpoints</Description>
         <Copyright>Copyright Miron Jakubowski</Copyright>
@@ -15,7 +15,7 @@
     </PropertyGroup>
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="FluentValidation" Version="11.11.0" />
+        <PackageReference Include="FluentValidation" Version="12.1.1" />
     </ItemGroup>
     <ItemGroup>
         <None Include="Package_README.md" Pack="true" PackagePath="\"/>
