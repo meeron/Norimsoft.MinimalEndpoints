@@ -7,11 +7,11 @@
   </Folder>
   <Folder Name="/items/">
     <File Path=".gitignore" />
-    <File Path="ci.yml" />
+    <File Path=".github/workflows/ci.yml" />
     <File Path="Directory.Build.props" />
     <File Path="Makefile" />
     <File Path="README.md" />
-    <File Path="release.yml" />
+    <File Path=".github/workflows/release.yml" />
   </Folder>
   <Folder Name="/sample/">
     <Project Path="sample/SampleWebApp.Books/SampleWebApp.Books.csproj" />

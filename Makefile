@@ -1,5 +1,6 @@
 build:
 	dotnet restore src/Norimsoft.MinimalEndpoints/Norimsoft.MinimalEndpoints.csproj
+	dotnet build src/Norimsoft.MinimalEndpoints/Norimsoft.MinimalEndpoints.csproj -c $(c) -f net10.0 /p:Version=$(v)
 	dotnet build src/Norimsoft.MinimalEndpoints/Norimsoft.MinimalEndpoints.csproj -c $(c) -f net9.0 /p:Version=$(v)
 	dotnet build src/Norimsoft.MinimalEndpoints/Norimsoft.MinimalEndpoints.csproj -c $(c) -f net8.0 /p:Version=$(v)
 
