@@ -37,7 +37,7 @@ public class EndpointsTests
         res.StatusCode.Should().Be(HttpStatusCode.OK);
         var dtops = await res.Content.ReadFromJsonAsync<IEnumerable<Product>>();
         
-        dtops.Count().Should().Be(1);
+        dtops!.Count().Should().Be(1);
     }
     
     [Fact]
@@ -50,7 +50,7 @@ public class EndpointsTests
         res.StatusCode.Should().Be(HttpStatusCode.OK);
         var dtops = await res.Content.ReadFromJsonAsync<IEnumerable<Product>>();
         
-        dtops.Count().Should().Be(1);
+        dtops!.Count().Should().Be(1);
     }
     
     [Fact]

@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Norimsoft.MinimalEndpoints;
 
+/// <summary>
+/// Extensions used internally to configure mapped endpoints.
+/// </summary>
 public static class RouteHandlerBuilderExtensions
 {
     internal static RouteHandlerBuilder AddErrorHandler(
