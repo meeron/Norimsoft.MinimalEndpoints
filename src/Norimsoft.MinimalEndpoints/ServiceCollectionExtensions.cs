@@ -56,8 +56,9 @@ public static class ServiceCollectionExtensions
             }
         }
 
-        // Add validators
-        AssemblyScanner.FindValidatorsInAssemblies(config.Assemblies)
+        // Add validators. Scan the already loaded public types (what FluentValidation's assembly scan uses),
+        // so assemblies with types that cannot be loaded don't throw here.
+        new AssemblyScanner(config.Types.Where(t => t.IsVisible).Distinct())
             .ForEach(scanResult =>
             {
                 var descriptor = new ServiceDescriptor(

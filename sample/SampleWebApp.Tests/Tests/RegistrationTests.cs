@@ -1,4 +1,5 @@
 using System.Net;
+using System.Reflection;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
@@ -94,5 +95,41 @@ public class RegistrationTests
         act.Should().NotThrow();
         await app.StartAsync();
         (await app.GetTestClient().GetAsync("/test/ping")).StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task AssemblyWithTypesThatFailToLoad_ShouldRegisterLoadableEndpointsAndValidators()
+    {
+        // Arrange
+        var assembly = new PartiallyLoadableAssembly(
+            typeof(DerivedWithRequestEndpoint),
+            typeof(DerivedWithRequestEndpoint.Validator),
+            null);
+        await using var app = TestApp.Build(configureServices: services =>
+            services.AddMinimalEndpoints(c => c.FromAssembly(assembly)));
+        app.UseMinimalEndpoints();
+        await app.StartAsync();
+        var client = app.GetTestClient();
+
+        // Act
+        var validRes = await client.PostAsJsonAsync("/test/derived-request", new EchoRequest("hi"));
+        var invalidRes = await client.PostAsJsonAsync("/test/derived-request", new EchoRequest(""));
+        var notScannedRes = await client.GetAsync("/test/ping");
+
+        // Assert
+        validRes.StatusCode.Should().Be(HttpStatusCode.OK);
+        invalidRes.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        notScannedRes.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    /// <summary>
+    /// Simulates an assembly where some types cannot be loaded, e.g. because a dependency is missing.
+    /// </summary>
+    private class PartiallyLoadableAssembly(params Type?[] types) : Assembly
+    {
+        public override Type[] GetTypes() =>
+            throw new ReflectionTypeLoadException(types, [new TypeLoadException("Could not load type")]);
+
+        public override Type[] GetExportedTypes() => GetTypes();
     }
 }

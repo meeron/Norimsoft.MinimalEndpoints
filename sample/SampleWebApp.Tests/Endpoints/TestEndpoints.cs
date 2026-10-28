@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Norimsoft.MinimalEndpoints;
@@ -66,6 +67,14 @@ public class DerivedWithRequestEndpoint : EchoEndpointBase<EchoRequest>
     protected override RouteHandlerBuilder Configure(EndpointRoute route)
     {
         return route.Post("/test/derived-request");
+    }
+
+    public class Validator : AbstractValidator<EchoRequest>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Text).NotEmpty();
+        }
     }
 }
 
