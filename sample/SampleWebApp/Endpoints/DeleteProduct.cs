@@ -19,7 +19,7 @@ public class DeleteProduct : MinimalEndpoint
 
     protected override async Task<IResult> Handle(CancellationToken ct)
     {
-        var deletedCount = _products.Delete(Param<Guid>("id"));
+        var deletedCount = _products.Delete(RequiredParam<Guid>("id"));
         
         await Task.CompletedTask;
         return Results.Ok(new { deletedCount });

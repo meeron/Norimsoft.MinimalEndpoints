@@ -39,8 +39,8 @@ public class GetProduct : MinimalEndpoint
 
     protected override async Task<IResult> Handle(CancellationToken ct)
     {
-        // Get id from route param
-        var productId = Param<Guid>("id");
+        // Get id from route param, responds 400 if it is missing or not a Guid
+        var productId = RequiredParam<Guid>("id");
         
         // Get query string parameter
         var version = Param<int?>("version");
@@ -86,6 +86,25 @@ public class AddProduct : MinimalEndpoint<NewProduct>
 
 public record NewProduct(string Name, decimal Price);
 ```
+### Route and query parameters
+Read route values and query string values (route values take priority) by name. Values are parsed with the invariant culture.
+Supported types are `string`, enums and any type implementing `IParsable<T>` (all numeric types, `bool`, `Guid`, `DateTime`,
+`DateTimeOffset`, `DateOnly`, `TimeOnly`, `TimeSpan`, ...), and their nullable variants. Other types throw `NotSupportedException`.
+
+```cs
+// Required: a missing, empty or invalid value ends the request with a 400 validation problem naming the parameter
+var id = RequiredParam<Guid>("id");
+
+// Optional with your own handling: false when the value is missing, empty or invalid
+if (!TryParam<int>("page", out var page))
+{
+    page = 1;
+}
+
+// Lenient: default (null here) when the value is missing, empty or invalid
+var version = Param<int?>("version");
+```
+
 ### FluentValidation integration
 Just add a validator as you usually do using [FluentValidation](https://docs.fluentvalidation.net/en/latest/start.html)
 ```cs
@@ -139,7 +158,7 @@ public class GetProduct : ProductsEndpoint
 
     protected override Task<IResult> Handle(CancellationToken ct)
     {
-        var id = Param<Guid>("id");
+        var id = RequiredParam<Guid>("id");
         return Task.FromResult(NotFoundProduct(id));
     }
 }

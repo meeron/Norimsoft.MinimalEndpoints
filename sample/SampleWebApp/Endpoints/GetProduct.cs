@@ -19,7 +19,7 @@ public class GetProduct : MinimalEndpoint
 
     protected override async Task<IResult> Handle(CancellationToken ct)
     {
-        var product = _products.Get(Param<Guid>("id"));
+        var product = _products.Get(RequiredParam<Guid>("id"));
 
         await Task.CompletedTask;
         return product != null ? Results.Ok(product) : Results.NoContent();

@@ -1,4 +1,4 @@
-using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Norimsoft.MinimalEndpoints.Internal;
 
 namespace Norimsoft.MinimalEndpoints;
 
@@ -45,67 +46,73 @@ public abstract class MinimalEndpointBase
     
     /// <summary>
     /// Gets a route value or, if there is none, the first query string value with the given name, converted to <typeparamref name="T"/>.
+    /// A missing or invalid value gives <c>default</c>; use <see cref="TryParam{T}"/> or <see cref="RequiredParam{T}"/> to detect them.
     /// </summary>
     /// <remarks>
-    /// Supported types are <see cref="string"/>, <see cref="int"/>, <see cref="long"/>, <see cref="double"/>, <see cref="decimal"/>,
-    /// <see cref="bool"/> and <see cref="Guid"/>, and their nullable variants. <see cref="double"/> and <see cref="decimal"/> are parsed
-    /// with the invariant culture.
+    /// Supported types are <see cref="string"/>, enums and any type implementing <see cref="IParsable{TSelf}"/>, e.g. all numeric
+    /// types, <see cref="bool"/>, <see cref="Guid"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="DateOnly"/>,
+    /// <see cref="TimeOnly"/> and <see cref="TimeSpan"/>, and their nullable variants. Values are parsed with the invariant culture.
+    /// Enums are matched by name, ignoring case, or by a defined numeric value.
     /// </remarks>
     /// <param name="name">The route parameter or query string key.</param>
     /// <typeparam name="T">The type to convert the value to.</typeparam>
-    /// <returns>The converted value, or <c>default</c> if the value is missing, cannot be parsed or <typeparamref name="T"/> is not supported.</returns>
+    /// <returns>The converted value, or <c>default</c> if the value is missing or cannot be parsed.</returns>
+    /// <exception cref="NotSupportedException"><typeparamref name="T"/> is not a supported type.</exception>
     protected T? Param<T>(string name)
     {
-        var value = Param(name);
-        if (value == null)
-        {
-            return default;
-        }
-        
-        var outType = typeof(T);
+        var raw = Param(name);
 
-        if (outType == typeof(string))
+        // Unlike the other types, an empty string is a valid string value here
+        if (typeof(T) == typeof(string))
         {
-            return (T)Convert.ChangeType(value, typeof(string));
+            return (T?)(object?)raw;
         }
 
-        if ((outType == typeof(int) || outType == typeof(int?))
-            && int.TryParse(value, out var intValue))
+        return ParamParser.Parse<T>(raw, out var value) == ParamParseStatus.Success ? value : default;
+    }
+
+    /// <summary>
+    /// Gets a route value or, if there is none, the first query string value with the given name, converted to <typeparamref name="T"/>.
+    /// See <see cref="Param{T}"/> for the supported types.
+    /// </summary>
+    /// <param name="name">The route parameter or query string key.</param>
+    /// <param name="value">The converted value, or <c>default</c> when this method returns <c>false</c>.</param>
+    /// <typeparam name="T">The type to convert the value to.</typeparam>
+    /// <returns><c>true</c> if the value is present and valid; <c>false</c> if it is missing, empty or cannot be parsed.</returns>
+    /// <exception cref="NotSupportedException"><typeparamref name="T"/> is not a supported type.</exception>
+    protected bool TryParam<T>(string name, [MaybeNullWhen(false)] out T value)
+    {
+        if (ParamParser.Parse<T>(Param(name), out var parsed) == ParamParseStatus.Success)
         {
-            return (T)Convert.ChangeType(intValue, typeof(int));
-        }
-        
-        if ((outType == typeof(Guid) || outType == typeof(Guid?))
-            && Guid.TryParse(value, out var guidValue))
-        {
-            return (T)Convert.ChangeType(guidValue, typeof(Guid));
-        }
-        
-        if ((outType == typeof(bool) || outType == typeof(bool?))
-            && bool.TryParse(value, out var boolValue))
-        {
-            return (T)Convert.ChangeType(boolValue, typeof(bool));
-        }
-        
-        if ((outType == typeof(long) || outType == typeof(long?))
-            && long.TryParse(value, out var longValue))
-        {
-            return (T)Convert.ChangeType(longValue, typeof(long));
-        }
-        
-        if ((outType == typeof(double) || outType == typeof(double?))
-            && double.TryParse(value, CultureInfo.InvariantCulture, out var doubleValue))
-        {
-            return (T)Convert.ChangeType(doubleValue, typeof(double));
-        }
-        
-        if ((outType == typeof(decimal) || outType == typeof(decimal?))
-            && decimal.TryParse(value, CultureInfo.InvariantCulture, out var decimalValue))
-        {
-            return (T)Convert.ChangeType(decimalValue, typeof(decimal));
+            value = parsed!;
+            return true;
         }
 
-        return default;
+        value = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets a route value or, if there is none, the first query string value with the given name, converted to <typeparamref name="T"/>.
+    /// If the value is missing, empty or cannot be parsed, the request ends with a 400 validation problem response naming the parameter.
+    /// See <see cref="Param{T}"/> for the supported types.
+    /// </summary>
+    /// <remarks>
+    /// The request is ended by throwing an exception that the endpoint's error handler turns into the 400 response, so don't catch
+    /// all exceptions around this call.
+    /// </remarks>
+    /// <param name="name">The route parameter or query string key.</param>
+    /// <typeparam name="T">The type to convert the value to.</typeparam>
+    /// <returns>The converted value.</returns>
+    /// <exception cref="NotSupportedException"><typeparamref name="T"/> is not a supported type.</exception>
+    protected T RequiredParam<T>(string name)
+    {
+        return ParamParser.Parse<T>(Param(name), out var value) switch
+        {
+            ParamParseStatus.Success => value!,
+            ParamParseStatus.Missing => throw new InvalidParameterException(name, $"The '{name}' parameter is required."),
+            _ => throw new InvalidParameterException(name, $"The value of the '{name}' parameter is not valid."),
+        };
     }
     
     internal abstract Delegate CreateHandler();

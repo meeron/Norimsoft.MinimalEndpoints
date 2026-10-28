@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Norimsoft.MinimalEndpoints.Internal;
 
 namespace Norimsoft.MinimalEndpoints;
 
@@ -20,6 +21,14 @@ public static class RouteHandlerBuilderExtensions
             try
             {
                 return await next(context);
+            }
+            catch (InvalidParameterException ex)
+            {
+                // A client error from RequiredParam, reported like a failed request validation
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    [ex.ParameterName] = [ex.Message],
+                });
             }
             catch (Exception ex)
             {
