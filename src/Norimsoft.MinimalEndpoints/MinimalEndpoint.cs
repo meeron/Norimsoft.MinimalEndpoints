@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Norimsoft.MinimalEndpoints;
 
@@ -83,8 +85,10 @@ public abstract class MinimalEndpointBase
     
     internal RouteHandlerBuilder Configure(WebApplication app, MinimalEndpointsConfiguration config)
     {
+        var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
+
         return Configure(new EndpointRoute(app, CreateHandler()))
-            .AddErrorHandler(GetType().FullName!, config.OnError);
+            .AddErrorHandler(logger, app.Environment.IsDevelopment(), config.OnError);
     }
 
     internal void SetContext(HttpContext ctx) => Context = ctx;

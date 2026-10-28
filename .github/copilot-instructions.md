@@ -33,13 +33,13 @@ The library targets `net8.0`, `net9.0`, and `net10.0`. The sample app and tests 
 - **`MinimalEndpoint`** — for endpoints with no request body; override `Handle(CancellationToken)`
 - **`MinimalEndpoint<TRequest>`** — for endpoints with a JSON body; override `Handle(TRequest, CancellationToken)`; FluentValidation runs automatically if an `IValidator<TRequest>` is registered
 - **`EndpointRoute`** — wraps `WebApplication.MapGet/Post/Put/Delete/Patch/MapMethods`; returned from `Configure()` to allow chaining `.Produces<T>()` and other Minimal API extensions
-- **`RouteHandlerBuilderExtensions`** — adds a per-endpoint error filter; unhandled exceptions return `Results.Problem(...)` or invoke the custom `OnError` delegate
-- **`TypesCache`** — static cache populated during `AddMinimalEndpoints`, consumed and cleared during `UseMinimalEndpoints`
+- **`RouteHandlerBuilderExtensions`** — adds a per-endpoint error filter; unhandled exceptions are always logged, then invoke the custom `OnError` delegate or return `Results.Problem(...)` (exception details only in Development)
+- **`EndpointTypesRegistry`** — per-app singleton (registered in DI, not static) populated during `AddMinimalEndpoints`, consumed and cleared during `UseMinimalEndpoints`
 
 ### Registration flow
 
-1. `AddMinimalEndpoints()` scans the calling assembly (or provided assemblies) for all `MinimalEndpoint` / `MinimalEndpoint<T>` subclasses, registers them as **scoped** services, and discovers FluentValidation validators.
-2. `UseMinimalEndpoints()` resolves each endpoint type from DI, calls `Configure(EndpointRoute)`, and attaches the error filter. It also clears `TypesCache` after mapping.
+1. `AddMinimalEndpoints()` scans the calling assembly (or provided assemblies) for all concrete `MinimalEndpoint` / `MinimalEndpoint<T>` subclasses (including ones derived through abstract base endpoints), registers each once as a **scoped** service, and discovers FluentValidation validators.
+2. `UseMinimalEndpoints()` resolves each endpoint type from DI, calls `Configure(EndpointRoute)`, and attaches the error filter. It also clears the registry after mapping.
 
 ### FluentValidation
 

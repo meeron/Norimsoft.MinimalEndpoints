@@ -11,19 +11,26 @@ public static class WebApplicationExtensions
     
     public static void UseMinimalEndpoints(this WebApplication app, Action<MinimalEndpointsConfiguration> config)
     {
+        var registry = app.Services.GetService<EndpointTypesRegistry>();
+        if (registry is null)
+        {
+            // AddMinimalEndpoints was not called, nothing to map
+            return;
+        }
+
         using var scope = app.Services.CreateScope();
         var sp = scope.ServiceProvider;
 
         var configuration = new MinimalEndpointsConfiguration();
         config(configuration);
-        
-        foreach (var endpointType in TypesCache.Types)
+
+        foreach (var endpointType in registry.Types)
         {
             var endpoint = (MinimalEndpointBase)sp.GetRequiredService(endpointType);
             endpoint.Configure(app, configuration);
         }
-        
-        // Clear types cache. We don't need it anymore
-        TypesCache.Types.Clear();
+
+        // Clear registered types. We don't need them anymore
+        registry.Clear();
     }
 }
