@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Norimsoft.MinimalEndpoints;
@@ -9,30 +8,36 @@ public static class RouteHandlerBuilderExtensions
 {
     internal static RouteHandlerBuilder AddErrorHandler(
         this RouteHandlerBuilder builder,
-        string endpointType,
+        ILogger logger,
+        bool includeExceptionDetails,
         Func<Exception, HttpContext, IResult>? onError)
     {
         return builder.AddEndpointFilter(async (context, next) =>
         {
-            var loggerFactory = (ILoggerFactory)context.HttpContext.RequestServices.GetRequiredService(typeof(ILoggerFactory));
-            var logger = loggerFactory.CreateLogger(endpointType);
-            
             try
             {
                 return await next(context);
             }
             catch (Exception ex)
             {
+                logger.LogError(
+                    ex,
+                    "Unhandled exception while processing {Method} {Path}",
+                    context.HttpContext.Request.Method,
+                    context.HttpContext.Request.Path);
+
                 if (onError is not null)
                 {
                     return onError(ex, context.HttpContext);
                 }
-             
-                logger.LogError(ex, ex.Message);
-                return Results.Problem(
-                    type: ex.GetType().FullName,
-                    title: ex.Message,
-                    detail: ex.StackTrace);
+
+                // Exception details can leak internals, so only return them in Development
+                return includeExceptionDetails
+                    ? Results.Problem(
+                        type: ex.GetType().FullName,
+                        title: ex.Message,
+                        detail: ex.StackTrace)
+                    : Results.Problem();
             }
         });
     }

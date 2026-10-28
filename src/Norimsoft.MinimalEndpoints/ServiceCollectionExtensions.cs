@@ -21,22 +21,21 @@ public static class ServiceCollectionExtensions
         var config = new ConfigureServices();
         configure(config);
         
-        // Find all endpoint types in the assembly
+        var registry = GetOrAddRegistry(services);
+
+        // Find all concrete endpoint types in the assembly, including ones derived from abstract base endpoints
         var endpointsTypes = config.Types
-            .Where(t => t.BaseType == typeof(MinimalEndpoint))
-            .ToList();
-        var endpointsWithRequests = config.Types
-            .Where(t => t.BaseType is { IsGenericType: true } && 
-                        t.BaseType.GetGenericTypeDefinition() == typeof(MinimalEndpoint<>))
-            .ToList();
-        
-        endpointsTypes.AddRange(endpointsWithRequests);
+            .Where(t => t is { IsClass: true, IsAbstract: false, ContainsGenericParameters: false } &&
+                        t.IsAssignableTo(typeof(MinimalEndpointBase)));
 
         foreach (var type in endpointsTypes)
         {
-            // Used in requests handlers
-            services.AddScoped(type);
-            TypesCache.Types.Add(type);
+            // Skip types already registered by an earlier call, so each endpoint is mapped once
+            if (registry.Add(type))
+            {
+                // Used in requests handlers
+                services.AddScoped(type);
+            }
         }
 
         // Add validators
@@ -51,5 +50,22 @@ public static class ServiceCollectionExtensions
             });
         
         return services;
+    }
+
+    private static EndpointTypesRegistry GetOrAddRegistry(IServiceCollection services)
+    {
+        var registry = services
+            .Where(d => !d.IsKeyedService && d.ServiceType == typeof(EndpointTypesRegistry))
+            .Select(d => d.ImplementationInstance)
+            .OfType<EndpointTypesRegistry>()
+            .FirstOrDefault();
+
+        if (registry is null)
+        {
+            registry = new EndpointTypesRegistry();
+            services.AddSingleton(registry);
+        }
+
+        return registry;
     }
 }

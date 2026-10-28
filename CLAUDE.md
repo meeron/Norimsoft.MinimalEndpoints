@@ -41,13 +41,15 @@ All library code is in `src/Norimsoft.MinimalEndpoints/` (a handful of files).
 - `MinimalEndpoint<TRequest>` — `[FromBody]` request; override `Handle(TRequest, CancellationToken)`. If an `IValidator<TRequest>` is registered, it runs first and returns `Results.ValidationProblem` on failure.
 
 **Registration flow:**
-1. `AddMinimalEndpoints()` (`ServiceCollectionExtensions`) scans the calling assembly, or the assemblies given via `FromAssembly`/`FromAssemblyContaining<T>` (`ConfigureServices`). It registers every type whose **direct** `BaseType` is `MinimalEndpoint` or `MinimalEndpoint<>` as a scoped service and records it in the static `Internal/TypesCache`. It also registers FluentValidation validators from those assemblies as transient. It can be called several times for multiple assemblies (see `sample/SampleWebApp.Books`).
-2. `UseMinimalEndpoints()` (`WebApplicationExtensions`) creates a temporary scope, resolves each cached endpoint **once at startup** only to call `Configure`, attaches the error filter, and then clears `TypesCache`.
+1. `AddMinimalEndpoints()` (`ServiceCollectionExtensions`) scans the calling assembly, or the assemblies given via `FromAssembly`/`FromAssemblyContaining<T>` (`ConfigureServices`). It registers every concrete (non-abstract, non-open-generic) class deriving from `MinimalEndpointBase`, including through abstract base endpoints, as a scoped service and records it in `Internal/EndpointTypesRegistry`. The registry is a singleton in that app's `IServiceCollection` (never static), so several apps in one process stay independent; a type is added only once, so registering the same assembly twice is harmless. It also registers FluentValidation validators from those assemblies as transient. It can be called several times for multiple assemblies (see `sample/SampleWebApp.Books`).
+2. `UseMinimalEndpoints()` (`WebApplicationExtensions`) resolves the registry (doing nothing if `AddMinimalEndpoints` was never called), creates a temporary scope, resolves each endpoint **once at startup** only to call `Configure`, attaches the error filter, and then clears the registry.
 3. Per request, the delegate from `CreateHandler()` resolves a fresh endpoint instance from the request's scoped `IServiceProvider`, sets `HttpContext`, and calls `Handle`.
 
-Consequences: endpoints that inherit through an intermediate abstract class are not discovered, and endpoint constructors run at startup as well as per request.
+Consequence: endpoint constructors run at startup as well as per request.
 
-**Error handling** (`RouteHandlerBuilderExtensions.AddErrorHandler`): an endpoint filter catches exceptions. It calls `MinimalEndpointsConfiguration.OnError` when one is set (via `UseMinimalEndpoints(c => c.OnError = ...)`); otherwise it logs the exception and returns `Results.Problem` with the exception type, message and stack trace.
+**Error handling** (`RouteHandlerBuilderExtensions.AddErrorHandler`): an endpoint filter catches exceptions and always logs them with a logger created once per endpoint at startup (category = endpoint type's full name). It then calls `MinimalEndpointsConfiguration.OnError` when one is set (via `UseMinimalEndpoints(c => c.OnError = ...)`). Otherwise it returns `Results.Problem`: with the exception type, message and stack trace only when the environment is Development, and a generic 500 problem in every other environment.
+
+Tests that need control over registration or the environment host their own app via `sample/SampleWebApp.Tests/TestApp.cs` (TestServer) using endpoints from `sample/SampleWebApp.Tests/Endpoints/`, rather than going through the sample app.
 
 ## Sample, tests and benchmarks
 
