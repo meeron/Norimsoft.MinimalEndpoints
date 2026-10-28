@@ -6,12 +6,12 @@
         <Copyright>Copyright Miron Jakubowski</Copyright>
         <PackageTags>endpoints;minimalapi;webapi</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <MinVerTagPrefix>v</MinVerTagPrefix>
         <PackageProjectUrl>https://github.com/meeron/Norimsoft.MinimalEndpoints</PackageProjectUrl>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageReadmeFile>Package_README.md</PackageReadmeFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>

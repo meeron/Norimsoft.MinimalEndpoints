@@ -6,14 +6,32 @@ using Norimsoft.MinimalEndpoints.Internal;
 
 namespace Norimsoft.MinimalEndpoints;
 
+/// <summary>
+/// Registers Minimal Endpoints services.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers all endpoints and FluentValidation validators from the calling assembly.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection AddMinimalEndpoints(this IServiceCollection services)
     {
         var asm = Assembly.GetCallingAssembly();
         return services.AddMinimalEndpoints(c => c.FromAssembly(asm));
     }
     
+    /// <summary>
+    /// Registers all endpoints and FluentValidation validators from the selected assemblies.
+    /// Can be called several times; each endpoint is registered only once.
+    /// </summary>
+    /// <example>
+    /// <code>services.AddMinimalEndpoints(c => c.FromAssemblyContaining&lt;Book&gt;());</code>
+    /// </example>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configure">Selects the assemblies to scan.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection AddMinimalEndpoints(
         this IServiceCollection services,
         Action<ConfigureServices> configure)
