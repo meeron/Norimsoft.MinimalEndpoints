@@ -131,4 +131,50 @@ public class AddBook : MinimalEndpoint<NewBook>
 public record NewBook(string Name);
 ```
 
+### Shared base endpoints
+Endpoints can derive from your own abstract base classes, e.g. to share helpers. Only concrete classes are registered as endpoints.
+```cs
+public abstract class ProductsEndpoint : MinimalEndpoint
+{
+    protected IResult NotFoundProduct(Guid id) =>
+        Results.Problem(statusCode: 404, title: $"Product {id} not found");
+}
+
+public class GetProduct : ProductsEndpoint
+{
+    protected override RouteHandlerBuilder Configure(EndpointRoute route)
+    {
+        return route.Get("/products/{id}");
+    }
+
+    protected override Task<IResult> Handle(CancellationToken ct)
+    {
+        var id = Param<Guid>("id");
+        return Task.FromResult(NotFoundProduct(id));
+    }
+}
+```
+
+### Endpoints from other assemblies
+`AddMinimalEndpoints()` registers endpoints and validators from the calling assembly. Call it again to add other assemblies; each endpoint is registered only once.
+```cs
+builder.Services.AddMinimalEndpoints();
+builder.Services.AddMinimalEndpoints(c => c.FromAssemblyContaining<Book>());
+```
+
+### Error handling
+Unhandled exceptions thrown by an endpoint are logged and turned into a `500` problem details response.
+The exception type, message and stack trace are included in the response only when the environment is `Development`.
+
+Use `OnError` to return your own response instead:
+```cs
+app.UseMinimalEndpoints(config =>
+{
+    config.OnError = (ex, httpContext) => Results.Problem(
+        statusCode: 500,
+        title: "Something went wrong",
+        instance: httpContext.Request.Path);
+});
+```
+
 #### Check sample project for more examples
