@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <PackageReference Include="Bogus" Version="35.6.0" />
+        <PackageReference Include="Bogus" Version="35.6.5" />
     </ItemGroup>
 </Project>
