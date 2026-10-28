@@ -20,7 +20,7 @@ public class GetProductsEndpoint : MinimalEndpoint
 
     protected override Task<IResult> Handle(CancellationToken ct)
     {
-        var count = Param("count", 10);
+        var count = Param<int?>("count") ?? 10;
         var products = _products.GetAll(count);
 
         return Task.FromResult(Results.Ok(products));
