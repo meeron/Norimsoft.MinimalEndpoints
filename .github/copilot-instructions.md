@@ -29,7 +29,7 @@ The library targets `net8.0`, `net9.0`, and `net10.0`. The sample app and tests 
 
 ### Library (`src/Norimsoft.MinimalEndpoints/`)
 
-- **`MinimalEndpointBase`** — abstract base with `Configure(EndpointRoute)` and typed `Param<T>(name)` for reading route/query params
+- **`MinimalEndpointBase`** — abstract base with `Configure(EndpointRoute)` and typed `Param<T>` / `TryParam<T>` / `RequiredParam<T>` for reading route/query params
 - **`MinimalEndpoint`** — for endpoints with no request body; override `Handle(CancellationToken)`
 - **`MinimalEndpoint<TRequest>`** — for endpoints with a JSON body; override `Handle(TRequest, CancellationToken)`; FluentValidation runs automatically if an `IValidator<TRequest>` is registered
 - **`EndpointRoute`** — wraps `WebApplication.MapGet/Post/Put/Delete/Patch/MapMethods`; returned from `Configure()` to allow chaining `.Produces<T>()` and other Minimal API extensions
@@ -67,7 +67,7 @@ Uses `WebApplicationFactory<Program>` via `SampleWebAppTestFactory`. Tests are i
 
 ## Key Conventions
 
-- `Param<T>(name)` resolves both **route parameters** and **query string** parameters (route takes priority). Supported types: `string`, `int`, `Guid`, `bool`, `long`, `double`, `decimal` (and their nullable variants).
+- `Param<T>(name)`, `TryParam<T>(name, out value)` and `RequiredParam<T>(name)` resolve both **route parameters** and **query string** parameters (route takes priority). Supported types: `string`, enums and any `IParsable<T>` type (and their nullable variants), parsed with the invariant culture; other types throw `NotSupportedException`. For a missing or invalid value, `Param<T>` returns `default`, `TryParam<T>` returns `false`, and `RequiredParam<T>` ends the request with a 400 validation problem. Prefer `RequiredParam<T>` for ids and other mandatory values.
 - `Configure()` must return the `RouteHandlerBuilder` — this is what enables chaining `.Produces<T>()` and adding metadata.
 - Endpoints are resolved **per-request** from a scoped DI scope, so constructor injection of scoped services is safe.
 - The library itself has no dependency on the sample; the sample lives under `sample/` and is not packaged.

@@ -36,7 +36,12 @@ The solution file is `Norimsoft.MinimalEndpoints.slnx`. `Directory.Build.props` 
 All library code is in `src/Norimsoft.MinimalEndpoints/` (a handful of files).
 
 **Endpoint types** (`MinimalEndpoint.cs`):
-- `MinimalEndpointBase` — abstract `Configure(EndpointRoute)` returning `RouteHandlerBuilder` (so callers can chain `.Produces<T>()`, etc.), plus `Context` and `Param<T>(name)`, which reads a route value first, then the query string. `Param<T>` supports `string`, `int`, `Guid`, `bool`, `long`, `double`, `decimal` (and nullables); unsupported types or parse failures return `default`.
+- `MinimalEndpointBase` — abstract `Configure(EndpointRoute)` returning `RouteHandlerBuilder` (so callers can chain `.Produces<T>()`, etc.), plus `Context` and the parameter readers, which read a route value first, then the query string:
+  - `Param<T>(name)` returns `default` for a missing, empty or invalid value. Kept lenient for backward compatibility; use the next two to detect problems.
+  - `TryParam<T>(name, out value)` returns `false` for a missing, empty or invalid value.
+  - `RequiredParam<T>(name)` throws the internal `InvalidParameterException`, which the error filter turns into a 400 `ValidationProblem` keyed by the parameter name. It isn't logged and doesn't reach `OnError`.
+
+  All three share `Internal/ParamParser`: `string`, enums (by name ignoring case, or a defined value) and any `IParsable<T>` type, plus nullables, always with the invariant culture. Unsupported types throw `NotSupportedException`.
 - `MinimalEndpoint` — no body; override `Handle(CancellationToken)`.
 - `MinimalEndpoint<TRequest>` — `[FromBody]` request; override `Handle(TRequest, CancellationToken)`. If an `IValidator<TRequest>` is registered, it runs first and returns `Results.ValidationProblem` on failure.
 

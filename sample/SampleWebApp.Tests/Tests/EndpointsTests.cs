@@ -114,6 +114,18 @@ public class EndpointsTests
     }
     
     [Fact]
+    public async Task GetWithInvalidId_ShouldResponse_BadRequest()
+    {
+        // Act
+        var res = await _client.GetAsync("/products/not-a-guid");
+        var validationResult = await res.Content.ReadFromJsonAsync<ValidationResult>();
+
+        // Assert
+        res.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        validationResult!.Errors!["id"][0].Should().Be("The value of the 'id' parameter is not valid.");
+    }
+    
+    [Fact]
     public async Task Head_ShouldResponse_Ok()
     {
         // Arrange

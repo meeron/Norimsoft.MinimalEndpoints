@@ -20,7 +20,7 @@ public class UpdateProduct : MinimalEndpoint<UpdateProductBody>
 
     protected override async Task<IResult> Handle(UpdateProductBody req, CancellationToken ct)
     {
-        var id = Param<Guid>("id");
+        var id = RequiredParam<Guid>("id");
         
         var updatedCount = _products.Update(id, req.Name, req.Price);
 
